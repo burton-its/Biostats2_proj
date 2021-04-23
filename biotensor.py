@@ -27,11 +27,13 @@ train_labels = train_features.pop("rm")
 test_labels = test_features.pop("rm")
 
 
-normalizer = preprocessing.Normalization()
-normalizer.adapt(np.array(train_features))
+# normalizer = preprocessing.Normalization()
+# normalizer.adapt(np.array(train_features))
 # print(normalizer.mean.numpy())
 
 first = np.array(train_features[:1])
+
+
 
 # with np.printoptions(precision = 2, suppress = True):
 # 	print("first example", first)
@@ -43,58 +45,121 @@ first = np.array(train_features[:1])
 
 
 
-# hm = np.array(train_features["hm"])
-# hm_normalizer = preprocessing.Normalization(input_shape = [1,])
-# hm_normalizer.adapt(hm)
+pip = np.array(train_features["pip"])
+
+# pip_normalizer = preprocessing.Normalization()
+# pip_normalizer.adapt(pip)
+# normalized_data = pip_normalizer(pip)
 
 
-# linear_model = tf.keras.Sequential([
-# 	normalizer,
+# print(pip_normalizer.numpy().std())
+
+
+pi_model = keras.Sequential([
+	layers.Dense(32, activation = "relu"), 
+	layers.Dense(1)])
+
+pi_model.compile(loss = "mean_absolute_error",
+	optimizer = tf.optimizers.Adam(0.01))
+
+
+
+
+history = pi_model.fit(
+	train_features["pip"],train_labels,
+	validation_split = 0.2,
+	verbose = 0, epochs = 500)
+
+
+
+# x = tf.linspace(0.0,10,11)
+# y = pi_model.predict(x)
+
+# def plot_pi(x,y):
+# 	plt.scatter(train_features["pip"], train_labels, label = "data")
+# 	plt.plot(x, y, color = "k", label = "predictions")
+# 	plt.xlabel("pi")
+# 	plt.ylabel("rm")
+# 	# plt.xlim(0,2)
+# 	# plt.ylim(0,7)
+# 	plt.legend()
+# 	plt.show()
+# 	# plt.savefig("dnn_pi_model_2.pdf")
+
+# plot_pi(x,y)
+# plot_pi(x,y)
+# def plot_loss(history):
+#   plt.plot(history.history['loss'], label='loss')
+#   plt.plot(history.history['val_loss'], label='val_loss')
+#   plt.ylim([0, 5])
+#   plt.xlabel('Epoch')
+#   plt.ylabel('Error [rm]')
+#   plt.legend()
+#   plt.grid(True)
+#   plt.savefig("pi_dnn_test1.pdf")
+
+
+# pip_model = tf.keras.Sequential([
+# 	pip_normalizer,
 # 	layers.Dense(units = 1)])
 
-# linear_model.compile(
+
+
+
+# pip_model.compile(
 # 	optimizer = tf.optimizers.Adam(learning_rate = 0.1),
 # 	loss = "mean_absolute_error")
 
-# history = linear_model.fit(
-# 	train_features,train_labels,
+# history = pip_model.fit(
+# 	train_features["pip"], train_labels,
 # 	epochs = 100,
 # 	verbose = 0,
 # 	validation_split = 0.2)
 
-# hm_model = tf.keras.Sequential([
-# 	hm_normalizer,
-# 	layers.Dense(units = 1)])
-# # hm_model.summary()
 
-# # print(hm_model.predict(hm[:10]))
-
-# hm_model.compile(
-# 	optimizer = tf.optimizers.Adam(learning_rate = 0.1),
-# 	loss = "mean_absolute_error")
-
-# history = hm_model.fit(
-# 	train_features["hm"], train_labels,
-# 	epochs = 50,
-# 	verbose = 0,
-# 	validation_split = 0.2)
 
 # test_results = {}
 
-# test_results["hm_model"] = hm_model.evaluate(
-# 	test_features["hm"],
+# test_results["pip_model"] = pip_model.evaluate(
+# 	test_features["pip"],
 # 	test_labels, verbose = 0)
 
-# x = tf.linspace(0.0,4,4)
-# y = hm_model.predict(x)
 
 
-# def plot_hm(x,y):
-# 	plt.scatter(train_features["hm"], train_labels, label = "Data")
-# 	plt.plot(x,y, color = "k", label = "predictions")
-# 	plt.xlabel("hm")
-# 	plt.ylabel("rm")
-# 	plt.legend()
-# 	plt.savefig("regression.pdf")
+# print(dnn_pi_model.summary())
 
-# plot_hm(x,y)
+# test_results["dnn__pi_model"] = dnn_pi_model.evaluate(
+# 	test_features["pip"], test_labels, verbose = 0)
+
+# modelcompare = pd.DataFrame(test_results, index = ["Mean absolute error[pi]"]).T
+
+
+
+
+
+
+
+test_predictions = pi_model.predict(test_features["pip"]).flatten()
+error = test_predictions - test_labels
+plt.hist(error, bins = 25)
+plt.xlabel("prediction error for pi")
+plt.show()
+
+
+# plt.scatter(test_labels, test_predictions)
+# plt.xlabel("true values rm")
+# plt.ylabel("predictions rm")
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
